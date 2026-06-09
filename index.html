@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>綠源維運管理系統</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <div class="logo-icon">⚡</div>
+          <div>
+            <div class="logo-title">綠源維運</div>
+            <div class="logo-subtitle">管理系統 2026</div>
+          </div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active" data-view="dashboard">
+          <span class="nav-icon">▦</span><span>儀表板</span>
+        </a>
+        <div class="nav-section">案場管理</div>
+        <a href="#" class="nav-item" data-view="sites">
+          <span class="nav-icon">◉</span><span>案場清單</span>
+        </a>
+        <div class="nav-section">維運計畫</div>
+        <a href="#" class="nav-item" data-view="schedule">
+          <span class="nav-icon">▦</span><span>年度計畫甘特圖</span>
+        </a>
+        <a href="#" class="nav-item" data-view="workorders">
+          <span class="nav-icon">☰</span><span>工單管理</span>
+        </a>
+        <a href="#" class="nav-item" data-view="checklists">
+          <span class="nav-icon">✓</span><span>維護檢查表</span>
+        </a>
+        <div class="nav-section">現場作業</div>
+        <a href="#" class="nav-item" data-view="cleaning">
+          <span class="nav-icon">◌</span><span>模組清洗管理</span>
+        </a>
+        <a href="#" class="nav-item" data-view="dispatch">
+          <span class="nav-icon">◈</span><span>派工管理</span>
+        </a>
+        <div class="nav-section">記錄與報表</div>
+        <a href="#" class="nav-item" data-view="history">
+          <span class="nav-icon">◎</span><span>維運履歷</span>
+        </a>
+        <a href="#" class="nav-item" data-view="photos">
+          <span class="nav-icon">□</span><span>照片管理</span>
+        </a>
+        <a href="#" class="nav-item" data-view="reports">
+          <span class="nav-icon">▣</span><span>報表中心</span>
+        </a>
+        <div class="nav-section">系統設定</div>
+        <a href="#" class="nav-item" data-view="users">
+          <span class="nav-icon">◑</span><span>權限管理</span>
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="current-user">
+          <div class="user-avatar-sm">王</div>
+          <div>
+            <div class="user-name">王志明</div>
+            <div class="user-role">管理員</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="main-wrapper">
+      <header class="topbar">
+        <button class="menu-toggle" id="menuToggle">☰</button>
+        <div class="topbar-title" id="topbarTitle">儀表板</div>
+        <div class="topbar-right">
+          <div class="search-wrap">
+            <input type="text" id="globalSearch" placeholder="搜尋案場、工單..." oninput="App.search(this.value)">
+          </div>
+          <div class="notif-btn" title="通知">
+            <span>🔔</span>
+            <span class="notif-badge" id="notifBadge">3</span>
+          </div>
+          <div class="user-avatar">王</div>
+        </div>
+      </header>
+      <main class="content" id="content">
+        <div class="loading">載入中...</div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="modalOverlay" onclick="App.closeModal()">
+    <div class="modal" id="modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalTitle"></h3>
+        <button class="modal-close" onclick="App.closeModal()">✕</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
