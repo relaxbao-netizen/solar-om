@@ -286,10 +286,10 @@ table { border-collapse: collapse; }
 <body>
 <div id="app">
   <aside class="sidebar" id="sidebar">
-    <div class="sidebar-header">
+    <div class="sidebar-header" onclick="App.navigate('dashboard')" style="cursor:pointer">
       <div class="logo">
         <div class="logo-icon">⚡</div>
-        <div><div class="logo-title">綠源維運戰情室</div></div>
+        <div><div class="logo-title">綠源維運管理系統</div></div>
       </div>
     </div>
     <nav class="sidebar-nav">
@@ -311,13 +311,6 @@ table { border-collapse: collapse; }
     </nav>
   </aside>
   <div class="main-wrapper">
-    <header class="topbar">
-      <button class="menu-toggle" id="menuToggle">☰</button>
-      <div class="topbar-title" id="topbarTitle">儀表板</div>
-      <div class="topbar-right">
-        <div class="search-wrap"><input type="text" id="globalSearch" placeholder="搜尋案場、工單..." oninput="App.search(this.value)"></div>
-      </div>
-    </header>
     <main class="content" id="content"><div class="loading">載入中...</div></main>
   </div>
 </div>
@@ -440,18 +433,11 @@ const App={
     document.querySelectorAll('.nav-item').forEach(el=>{
       el.addEventListener('click',e=>{e.preventDefault();this.navigate(el.dataset.view);});
     });
-    document.getElementById('menuToggle').addEventListener('click',()=>{
-      const sb=document.getElementById('sidebar');
-      if(window.innerWidth<=768)sb.classList.toggle('mobile-open');
-      else sb.classList.toggle('collapsed');
-    });
     this.navigate('dashboard');
   },
   navigate(view){
     this.state.view=view;
     document.querySelectorAll('.nav-item').forEach(el=>el.classList.toggle('active',el.dataset.view===view));
-    const titles={dashboard:'儀表板',sites:'案場清單',schedule:'年度計畫甘特圖',workorders:'工單管理',checklists:'維護檢查表',cleaning:'模組清洗管理',dispatch:'派工管理',history:'維運履歷',photos:'照片管理',reports:'報表中心',users:'權限管理'};
-    document.getElementById('topbarTitle').textContent=titles[view]||view;
     this.render();
   },
   render(){
