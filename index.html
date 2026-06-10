@@ -4,104 +4,768 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>綠源維運管理系統</title>
-  <link rel="stylesheet" href="css/style.css">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --sidebar-w: 220px; --topbar-h: 56px;
+  --sidebar-bg: #0f172a; --sidebar-hover: #1e293b; --sidebar-active: #0d9488;
+  --sidebar-text: #94a3b8; --sidebar-section: #475569;
+  --primary: #0d9488; --primary-dark: #0f766e; --primary-light: #ccfbf1;
+  --content-bg: #f1f5f9; --card: #ffffff;
+  --text: #1e293b; --text-2: #475569; --text-3: #94a3b8;
+  --border: #e2e8f0;
+  --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+  --shadow-md: 0 4px 6px rgba(0,0,0,.07), 0 2px 4px rgba(0,0,0,.06);
+  --radius: 8px; --radius-sm: 4px;
+  --success: #10b981; --success-bg: #d1fae5;
+  --warning: #f59e0b; --warning-bg: #fef3c7;
+  --danger: #ef4444;  --danger-bg: #fee2e2;
+  --info: #3b82f6;    --info-bg: #dbeafe;
+  --purple: #8b5cf6;  --purple-bg: #ede9fe;
+  --clean-c: #f59e0b; --clean-bg: #fef9c3; --clean-text: #78350f;
+  --semi-c:  #10b981; --semi-bg:  #d1fae5; --semi-text:  #065f46;
+  --annual-c:#3b82f6; --annual-bg:#dbeafe; --annual-text:#1e40af;
+  --hv26-c:  #ef4444; --hv26-bg:  #fee2e2; --hv26-text:  #991b1b;
+  --hv25s-c: #8b5cf6; --hv25s-bg: #ede9fe; --hv25s-text: #5b21b6;
+}
+html, body { height: 100%; font-family: -apple-system,'Segoe UI','Microsoft JhengHei',sans-serif; font-size: 14px; color: var(--text); background: var(--content-bg); }
+a { text-decoration: none; color: inherit; }
+button { cursor: pointer; border: none; background: none; font-family: inherit; font-size: inherit; }
+input, select, textarea { font-family: inherit; font-size: inherit; }
+table { border-collapse: collapse; }
+#app { display: flex; height: 100vh; overflow: hidden; }
+.sidebar { width: var(--sidebar-w); flex-shrink: 0; background: var(--sidebar-bg); color: var(--sidebar-text); display: flex; flex-direction: column; transition: width .25s ease; overflow: hidden; }
+.sidebar.collapsed { width: 54px; }
+.sidebar-header { padding: 16px 14px; border-bottom: 1px solid #1e293b; }
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo-icon { font-size: 22px; flex-shrink: 0; width: 28px; text-align: center; }
+.logo-title { font-size: 15px; font-weight: 700; color: #f1f5f9; line-height: 1.2; }
+.logo-subtitle { font-size: 11px; color: var(--sidebar-section); }
+.sidebar-nav { flex: 1; overflow-y: auto; padding: 8px 0; }
+.sidebar-nav::-webkit-scrollbar { width: 3px; }
+.sidebar-nav::-webkit-scrollbar-thumb { background: #334155; border-radius: 2px; }
+.nav-section { font-size: 10px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--sidebar-section); padding: 12px 14px 4px; }
+.sidebar.collapsed .nav-section { display: none; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 14px; color: var(--sidebar-text); border-radius: 6px; margin: 1px 6px; transition: background .15s, color .15s; }
+.nav-item:hover { background: var(--sidebar-hover); color: #f1f5f9; }
+.nav-item.active { background: var(--sidebar-active); color: #fff; font-weight: 600; }
+.nav-icon { font-size: 15px; width: 20px; text-align: center; flex-shrink: 0; }
+.sidebar.collapsed .nav-item span:last-child { display: none; }
+.sidebar-footer { padding: 12px; border-top: 1px solid #1e293b; }
+.current-user { display: flex; align-items: center; gap: 8px; }
+.sidebar.collapsed .current-user > div:last-child { display: none; }
+.user-avatar-sm { width: 30px; height: 30px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; flex-shrink: 0; }
+.user-name { font-size: 13px; color: #f1f5f9; font-weight: 500; }
+.user-role { font-size: 11px; color: var(--sidebar-section); }
+.main-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+.topbar { height: var(--topbar-h); background: var(--card); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; padding: 0 20px; flex-shrink: 0; box-shadow: var(--shadow); }
+.menu-toggle { font-size: 18px; color: var(--text-2); padding: 4px 6px; border-radius: 4px; }
+.menu-toggle:hover { background: var(--content-bg); }
+.topbar-title { font-size: 16px; font-weight: 600; color: var(--text); flex: 1; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+.search-wrap input { border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; width: 220px; outline: none; background: var(--content-bg); color: var(--text); font-size: 13px; transition: border-color .15s; }
+.search-wrap input:focus { border-color: var(--primary); background: #fff; }
+.notif-btn { position: relative; cursor: pointer; padding: 4px; font-size: 18px; }
+.notif-badge { position: absolute; top: -2px; right: -2px; background: var(--danger); color: #fff; font-size: 10px; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+.user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; cursor: pointer; }
+.content { flex: 1; overflow-y: auto; padding: 24px; }
+.content::-webkit-scrollbar { width: 6px; }
+.content::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+.page-header { margin-bottom: 20px; }
+.page-title { font-size: 20px; font-weight: 700; color: var(--text); }
+.page-subtitle { font-size: 13px; color: var(--text-3); margin-top: 2px; }
+.page-actions { display: flex; gap: 8px; align-items: center; }
+.page-header-row { display: flex; justify-content: space-between; align-items: flex-start; }
+.card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); }
+.card-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.card-title { font-size: 14px; font-weight: 600; color: var(--text); }
+.card-body { padding: 20px; }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.stat-card { background: var(--card); border-radius: var(--radius); padding: 18px 20px; box-shadow: var(--shadow); border-left: 4px solid var(--primary); }
+.stat-card.warning { border-left-color: var(--warning); }
+.stat-card.danger  { border-left-color: var(--danger); }
+.stat-card.success { border-left-color: var(--success); }
+.stat-card.info    { border-left-color: var(--info); }
+.stat-card.purple  { border-left-color: var(--purple); }
+.stat-label { font-size: 12px; color: var(--text-3); margin-bottom: 6px; font-weight: 500; }
+.stat-value { font-size: 26px; font-weight: 700; color: var(--text); line-height: 1; }
+.stat-unit  { font-size: 13px; font-weight: 400; color: var(--text-2); }
+.stat-sub   { font-size: 11px; color: var(--text-3); margin-top: 4px; }
+.btn { display: inline-flex; align-items: center; gap: 5px; padding: 7px 14px; border-radius: var(--radius-sm); font-weight: 500; font-size: 13px; transition: all .15s; cursor: pointer; border: none; }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-dark); }
+.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-2); }
+.btn-outline:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-sm { padding: 4px 10px; font-size: 12px; }
+.badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+.badge-success { background: var(--success-bg); color: var(--success); }
+.badge-warning { background: var(--warning-bg); color: var(--warning); }
+.badge-danger  { background: var(--danger-bg);  color: var(--danger);  }
+.badge-info    { background: var(--info-bg);    color: var(--info);    }
+.badge-neutral { background: #f1f5f9; color: var(--text-2); }
+.badge-purple  { background: var(--purple-bg);  color: var(--purple);  }
+.chip { display: inline-flex; align-items: center; gap: 3px; padding: 2px 7px; border-radius: 10px; font-size: 11px; font-weight: 700; border: 1px solid transparent; cursor: default; }
+.chip.clean  { background: var(--clean-bg);  color: var(--clean-text);  border-color: var(--clean-c); }
+.chip.semi   { background: var(--semi-bg);   color: var(--semi-text);   border-color: var(--semi-c); }
+.chip.annual { background: var(--annual-bg); color: var(--annual-text); border-color: var(--annual-c); }
+.chip.hv26   { background: var(--hv26-bg);   color: var(--hv26-text);   border-color: var(--hv26-c); }
+.chip.hv25s  { background: var(--hv25s-bg);  color: var(--hv25s-text);  border-color: var(--hv25s-c); }
+.table-wrap { overflow-x: auto; }
+.data-table { width: 100%; font-size: 13px; }
+.data-table th { background: #f8fafc; font-weight: 600; color: var(--text-2); padding: 10px 14px; text-align: left; white-space: nowrap; border-bottom: 2px solid var(--border); }
+.data-table td { padding: 11px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: #f8fafc; }
+.data-table tr.clickable { cursor: pointer; }
+.data-table tr.selected td { background: var(--primary-light); }
+.filters { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
+.filter-select { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 10px; outline: none; background: var(--card); color: var(--text); font-size: 13px; }
+.filter-select:focus { border-color: var(--primary); }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+.dash-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+.month-tasks { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
+.month-task-item { padding: 10px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--card); }
+.month-task-count { font-size: 22px; font-weight: 700; }
+.progress-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 13px; }
+.progress-bar-wrap { flex: 1; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+.progress-bar { height: 100%; border-radius: 4px; transition: width .3s; }
+.timeline-item { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.timeline-item:last-child { border-bottom: none; }
+.timeline-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+.timeline-body { flex: 1; }
+.timeline-title { font-size: 13px; font-weight: 500; }
+.timeline-meta { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+.zone-badge { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: 600; }
+.zone-north { background: #dbeafe; color: #1e40af; }
+.zone-south { background: #fce7f3; color: #9d174d; }
+.gantt-wrap { overflow-x: auto; overflow-y: visible; }
+.gantt-table { border-collapse: separate; border-spacing: 0; min-width: 1100px; font-size: 12px; width: 100%; }
+.gantt-table th { padding: 8px 6px; background: #f8fafc; border-bottom: 2px solid var(--border); border-right: 1px solid var(--border); text-align: center; white-space: nowrap; }
+.gantt-table td { padding: 5px 4px; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); vertical-align: middle; }
+.gantt-table .site-col { position: sticky; left: 0; background: var(--card); z-index: 2; min-width: 160px; max-width: 180px; padding: 6px 10px; font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gantt-table th.site-col { z-index: 3; font-weight: 600; text-align: left; font-size: 12px; }
+.gantt-month-col { min-width: 72px; text-align: center; }
+.gantt-cell { text-align: center; min-width: 72px; height: 36px; }
+.gantt-cell.drag-over { background: var(--primary-light) !important; }
+.gantt-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px; padding: 2px; }
+.gantt-chip { padding: 1px 5px; border-radius: 8px; font-size: 10px; font-weight: 700; cursor: pointer; transition: opacity .15s; border: 1px solid transparent; white-space: nowrap; }
+.gantt-chip:hover { opacity: .8; }
+.gantt-chip.clean  { background: var(--clean-bg);  color: var(--clean-text);  border-color: var(--clean-c); }
+.gantt-chip.semi   { background: var(--semi-bg);   color: var(--semi-text);   border-color: var(--semi-c); }
+.gantt-chip.annual { background: var(--annual-bg); color: var(--annual-text); border-color: var(--annual-c); }
+.gantt-chip.hv26   { background: var(--hv26-bg);   color: var(--hv26-text);   border-color: var(--hv26-c); }
+.gantt-chip.hv25s  { background: var(--hv25s-bg);  color: var(--hv25s-text);  border-color: var(--hv25s-c); }
+.gantt-chip.dragging { opacity: .4; }
+.gantt-zone-row td { background: #f8fafc; font-weight: 700; font-size: 11px; color: var(--text-2); padding: 4px 10px; }
+.gantt-legend { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; }
+.legend-dot { width: 12px; height: 12px; border-radius: 3px; }
+.gantt-add-btn { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; font-size: 14px; line-height: 1; color: var(--text-3); cursor: pointer; transition: all .15s; }
+.gantt-add-btn:hover { background: var(--primary); color: #fff; }
+.wo-status-tabs { display: flex; gap: 4px; margin-bottom: 16px; flex-wrap: wrap; }
+.wo-tab { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: var(--card); color: var(--text-2); transition: all .15s; }
+.wo-tab.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.wo-cards { display: grid; gap: 10px; }
+.wo-card { background: var(--card); border-radius: var(--radius); padding: 14px 16px; box-shadow: var(--shadow); cursor: pointer; transition: box-shadow .15s; border-left: 4px solid var(--border); display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: start; }
+.wo-card:hover { box-shadow: var(--shadow-md); }
+.wo-card.pending { border-left-color: var(--text-3); }
+.wo-card.assigned { border-left-color: var(--info); }
+.wo-card.in-progress { border-left-color: var(--warning); }
+.wo-card.review { border-left-color: var(--purple); }
+.wo-card.completed { border-left-color: var(--success); }
+.wo-card.overdue { border-left-color: var(--danger); }
+.wo-id { font-size: 11px; color: var(--text-3); font-family: monospace; }
+.wo-site { font-size: 14px; font-weight: 600; color: var(--text); margin: 2px 0; }
+.wo-meta { font-size: 12px; color: var(--text-2); }
+.wo-date { font-size: 12px; color: var(--text-3); text-align: right; }
+.checklist-section { margin-bottom: 20px; }
+.checklist-section-title { font-size: 13px; font-weight: 700; color: var(--text-2); margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid var(--border); }
+.checklist-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f1f5f9; }
+.checklist-item:last-child { border-bottom: none; }
+.checklist-item input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--primary); }
+.checklist-item label { flex: 1; cursor: pointer; font-size: 13px; }
+.checklist-item label.checked { text-decoration: line-through; color: var(--text-3); }
+.checklist-tabs { display: flex; gap: 4px; margin-bottom: 20px; border-bottom: 2px solid var(--border); }
+.cl-tab { padding: 8px 16px; font-size: 13px; cursor: pointer; color: var(--text-2); border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all .15s; }
+.cl-tab.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 600; }
+.dispatch-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.cal-header { text-align: center; font-size: 11px; font-weight: 600; color: var(--text-3); padding: 4px 0; }
+.cal-day { min-height: 70px; background: var(--card); border: 1px solid var(--border); border-radius: 4px; padding: 4px; font-size: 11px; }
+.cal-day.today { border-color: var(--primary); background: var(--primary-light); }
+.cal-day.other-month { background: #f8fafc; color: var(--text-3); }
+.cal-day-num { font-weight: 600; margin-bottom: 2px; font-size: 12px; }
+.cal-event { background: var(--primary-light); color: var(--primary); border-radius: 2px; padding: 1px 4px; margin-top: 2px; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tech-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.tech-item:last-child { border-bottom: none; }
+.tech-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
+.tech-name { font-size: 13px; font-weight: 500; }
+.tech-tasks { font-size: 12px; color: var(--text-3); }
+.history-timeline { position: relative; padding-left: 24px; }
+.history-timeline::before { content: ''; position: absolute; left: 8px; top: 0; bottom: 0; width: 2px; background: var(--border); }
+.ht-item { position: relative; margin-bottom: 16px; }
+.ht-dot { position: absolute; left: -20px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--primary); border: 2px solid #fff; box-shadow: 0 0 0 2px var(--primary); }
+.ht-card { background: var(--card); border-radius: var(--radius); padding: 12px 16px; box-shadow: var(--shadow); }
+.ht-date { font-size: 11px; color: var(--text-3); margin-bottom: 4px; }
+.ht-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+.ht-desc { font-size: 12px; color: var(--text-2); }
+.photo-cats { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.photo-cat-btn { padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: var(--card); color: var(--text-2); }
+.photo-cat-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+.photo-item { border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); cursor: pointer; }
+.photo-thumb { height: 120px; background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%); display: flex; align-items: center; justify-content: center; font-size: 32px; }
+.photo-info { padding: 8px 10px; background: var(--card); }
+.photo-name { font-size: 11px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.photo-date { font-size: 10px; color: var(--text-3); }
+.photo-upload-area { border: 2px dashed var(--border); border-radius: var(--radius); padding: 40px; text-align: center; color: var(--text-3); cursor: pointer; transition: border-color .15s; }
+.photo-upload-area:hover { border-color: var(--primary); color: var(--primary); }
+.report-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+.report-card { background: var(--card); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); text-align: center; cursor: pointer; transition: box-shadow .15s; }
+.report-card:hover { box-shadow: var(--shadow-md); }
+.report-icon { font-size: 36px; margin-bottom: 10px; }
+.report-title { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+.report-desc { font-size: 12px; color: var(--text-3); }
+.user-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+.user-card { background: var(--card); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); text-align: center; }
+.user-card-avatar { width: 56px; height: 56px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700; margin: 0 auto 10px; }
+.user-card-name { font-size: 15px; font-weight: 600; }
+.user-card-role { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+.user-card-zone { margin-top: 8px; }
+.perm-table { width: 100%; }
+.perm-table th, .perm-table td { padding: 8px 14px; text-align: center; border: 1px solid var(--border); font-size: 12px; }
+.perm-table th { background: #f8fafc; font-weight: 600; }
+.perm-check { color: var(--success); font-size: 16px; }
+.perm-x { color: var(--danger); font-size: 14px; }
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--card); border-radius: var(--radius); box-shadow: 0 20px 60px rgba(0,0,0,.25); width: 100%; max-width: 600px; max-height: 90vh; display: flex; flex-direction: column; animation: modalIn .2s ease; }
+@keyframes modalIn { from { opacity: 0; transform: scale(.95) translateY(-10px); } to { opacity: 1; transform: none; } }
+.modal-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+.modal-title { font-size: 16px; font-weight: 600; }
+.modal-close { font-size: 18px; color: var(--text-3); padding: 4px; border-radius: 4px; }
+.modal-close:hover { background: var(--content-bg); color: var(--text); }
+.modal-body { padding: 20px; overflow-y: auto; flex: 1; }
+.modal-body::-webkit-scrollbar { width: 4px; }
+.modal-body::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
+.modal-footer { padding: 12px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; flex-shrink: 0; }
+.form-group { margin-bottom: 14px; }
+.form-label { display: block; font-size: 12px; font-weight: 600; color: var(--text-2); margin-bottom: 5px; }
+.form-control { width: 100%; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 10px; outline: none; color: var(--text); background: var(--card); transition: border-color .15s; }
+.form-control:focus { border-color: var(--primary); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.info-item .label { font-size: 11px; color: var(--text-3); margin-bottom: 2px; }
+.info-item .value { font-size: 13px; font-weight: 500; }
+.loading { text-align: center; padding: 60px; color: var(--text-3); font-size: 16px; }
+.empty-state { text-align: center; padding: 50px 20px; color: var(--text-3); }
+.empty-state-icon { font-size: 40px; margin-bottom: 12px; }
+.empty-state-text { font-size: 14px; }
+.divider { height: 1px; background: var(--border); margin: 16px 0; }
+.text-right { text-align: right; } .text-center { text-align: center; }
+.mt-4{margin-top:4px}.mt-8{margin-top:8px}.mt-16{margin-top:16px}.mt-20{margin-top:20px}
+.mb-4{margin-bottom:4px}.mb-8{margin-bottom:8px}.mb-16{margin-bottom:16px}
+.flex{display:flex}.flex-1{flex:1}.gap-8{gap:8px}.gap-12{gap:12px}
+.items-center{align-items:center}.justify-between{justify-content:space-between}
+.font-bold{font-weight:700}.font-medium{font-weight:500}
+.text-sm{font-size:12px}.text-xs{font-size:11px}
+.text-primary{color:var(--primary)}.text-danger{color:var(--danger)}.text-muted{color:var(--text-3)}
+.w-full{width:100%}.rounded{border-radius:var(--radius)}.overflow-hidden{overflow:hidden}
+@media (max-width: 768px) {
+  .sidebar { position: fixed; left: -100%; top: 0; bottom: 0; z-index: 500; transition: left .25s; }
+  .sidebar.mobile-open { left: 0; }
+  .content { padding: 14px; }
+  .dash-grid, .dispatch-grid { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .form-row, .info-grid { grid-template-columns: 1fr; }
+  .search-wrap input { width: 150px; }
+}
+</style>
 </head>
 <body>
-  <div id="app">
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-header">
-        <div class="logo">
-          <div class="logo-icon">⚡</div>
-          <div>
-            <div class="logo-title">綠源維運</div>
-            <div class="logo-subtitle">管理系統 2026</div>
-          </div>
-        </div>
+<div id="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <div class="logo-icon">⚡</div>
+        <div><div class="logo-title">綠源維運</div><div class="logo-subtitle">管理系統 2026</div></div>
       </div>
-      <nav class="sidebar-nav">
-        <a href="#" class="nav-item active" data-view="dashboard">
-          <span class="nav-icon">▦</span><span>儀表板</span>
-        </a>
-        <div class="nav-section">案場管理</div>
-        <a href="#" class="nav-item" data-view="sites">
-          <span class="nav-icon">◉</span><span>案場清單</span>
-        </a>
-        <div class="nav-section">維運計畫</div>
-        <a href="#" class="nav-item" data-view="schedule">
-          <span class="nav-icon">▦</span><span>年度計畫甘特圖</span>
-        </a>
-        <a href="#" class="nav-item" data-view="workorders">
-          <span class="nav-icon">☰</span><span>工單管理</span>
-        </a>
-        <a href="#" class="nav-item" data-view="checklists">
-          <span class="nav-icon">✓</span><span>維護檢查表</span>
-        </a>
-        <div class="nav-section">現場作業</div>
-        <a href="#" class="nav-item" data-view="cleaning">
-          <span class="nav-icon">◌</span><span>模組清洗管理</span>
-        </a>
-        <a href="#" class="nav-item" data-view="dispatch">
-          <span class="nav-icon">◈</span><span>派工管理</span>
-        </a>
-        <div class="nav-section">記錄與報表</div>
-        <a href="#" class="nav-item" data-view="history">
-          <span class="nav-icon">◎</span><span>維運履歷</span>
-        </a>
-        <a href="#" class="nav-item" data-view="photos">
-          <span class="nav-icon">□</span><span>照片管理</span>
-        </a>
-        <a href="#" class="nav-item" data-view="reports">
-          <span class="nav-icon">▣</span><span>報表中心</span>
-        </a>
-        <div class="nav-section">系統設定</div>
-        <a href="#" class="nav-item" data-view="users">
-          <span class="nav-icon">◑</span><span>權限管理</span>
-        </a>
-      </nav>
-      <div class="sidebar-footer">
-        <div class="current-user">
-          <div class="user-avatar-sm">王</div>
-          <div>
-            <div class="user-name">王志明</div>
-            <div class="user-role">管理員</div>
-          </div>
-        </div>
-      </div>
-    </aside>
-
-    <div class="main-wrapper">
-      <header class="topbar">
-        <button class="menu-toggle" id="menuToggle">☰</button>
-        <div class="topbar-title" id="topbarTitle">儀表板</div>
-        <div class="topbar-right">
-          <div class="search-wrap">
-            <input type="text" id="globalSearch" placeholder="搜尋案場、工單..." oninput="App.search(this.value)">
-          </div>
-          <div class="notif-btn" title="通知">
-            <span>🔔</span>
-            <span class="notif-badge" id="notifBadge">3</span>
-          </div>
-          <div class="user-avatar">王</div>
-        </div>
-      </header>
-      <main class="content" id="content">
-        <div class="loading">載入中...</div>
-      </main>
     </div>
-  </div>
-
-  <!-- Modal -->
-  <div class="modal-overlay" id="modalOverlay" onclick="App.closeModal()">
-    <div class="modal" id="modal" onclick="event.stopPropagation()">
-      <div class="modal-header">
-        <h3 class="modal-title" id="modalTitle"></h3>
-        <button class="modal-close" onclick="App.closeModal()">✕</button>
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active" data-view="dashboard"><span class="nav-icon">▦</span><span>儀表板</span></a>
+      <div class="nav-section">案場管理</div>
+      <a href="#" class="nav-item" data-view="sites"><span class="nav-icon">◉</span><span>案場清單</span></a>
+      <div class="nav-section">維運計畫</div>
+      <a href="#" class="nav-item" data-view="schedule"><span class="nav-icon">▦</span><span>年度計畫甘特圖</span></a>
+      <a href="#" class="nav-item" data-view="workorders"><span class="nav-icon">☰</span><span>工單管理</span></a>
+      <a href="#" class="nav-item" data-view="checklists"><span class="nav-icon">✓</span><span>維護檢查表</span></a>
+      <div class="nav-section">現場作業</div>
+      <a href="#" class="nav-item" data-view="cleaning"><span class="nav-icon">◌</span><span>模組清洗管理</span></a>
+      <a href="#" class="nav-item" data-view="dispatch"><span class="nav-icon">◈</span><span>派工管理</span></a>
+      <div class="nav-section">記錄與報表</div>
+      <a href="#" class="nav-item" data-view="history"><span class="nav-icon">◎</span><span>維運履歷</span></a>
+      <a href="#" class="nav-item" data-view="photos"><span class="nav-icon">□</span><span>照片管理</span></a>
+      <a href="#" class="nav-item" data-view="reports"><span class="nav-icon">▣</span><span>報表中心</span></a>
+      <div class="nav-section">系統設定</div>
+      <a href="#" class="nav-item" data-view="users"><span class="nav-icon">◑</span><span>權限管理</span></a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="current-user">
+        <div class="user-avatar-sm">王</div>
+        <div><div class="user-name">王志明</div><div class="user-role">管理員</div></div>
       </div>
-      <div class="modal-body" id="modalBody"></div>
     </div>
+  </aside>
+  <div class="main-wrapper">
+    <header class="topbar">
+      <button class="menu-toggle" id="menuToggle">☰</button>
+      <div class="topbar-title" id="topbarTitle">儀表板</div>
+      <div class="topbar-right">
+        <div class="search-wrap"><input type="text" id="globalSearch" placeholder="搜尋案場、工單..." oninput="App.search(this.value)"></div>
+        <div class="notif-btn"><span>🔔</span><span class="notif-badge">3</span></div>
+        <div class="user-avatar">王</div>
+      </div>
+    </header>
+    <main class="content" id="content"><div class="loading">載入中...</div></main>
   </div>
+</div>
+<div class="modal-overlay" id="modalOverlay" onclick="App.closeModal()">
+  <div class="modal" id="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3 class="modal-title" id="modalTitle"></h3>
+      <button class="modal-close" onclick="App.closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="App.closeModal()">關閉</button></div>
+  </div>
+</div>
+<script>
+// ── Data ─────────────────────────────────────────────────────────
+const SITES_DATA=[
+  {id:1,name:'花蓮聖若瑟',capacity:90.015,unit:'KW',city:'花蓮',zone:'北區',owner:'聖若瑟失智老人養護中心'},
+  {id:2,name:'花蓮保祿牧靈',capacity:93.39,unit:'KW',city:'花蓮',zone:'北區',owner:'保祿牧靈院'},
+  {id:3,name:'桃園大量八德廠',capacity:667.2,unit:'KW',city:'桃園',zone:'北區',owner:'大量電機'},
+  {id:4,name:'桃園東培龍潭廠',capacity:1270,unit:'KW',city:'桃園',zone:'北區',owner:'東培工業'},
+  {id:5,name:'桃園億流',capacity:64.5,unit:'KW',city:'桃園',zone:'北區',owner:'億流企業'},
+  {id:6,name:'桃園萬隆',capacity:1811.94,unit:'KW',city:'桃園',zone:'北區',owner:'萬隆農場'},
+  {id:7,name:'雲林西螺洪慶堂雞舍',capacity:225,unit:'KW',city:'雲林',zone:'北區',owner:'洪慶堂農牧'},
+  {id:8,name:'雲林西螺尚盈電腦',capacity:5.17,unit:'KW',city:'雲林',zone:'北區',owner:'尚盈電腦'},
+  {id:9,name:'雲林西螺亞展汽車',capacity:5.17,unit:'KW',city:'雲林',zone:'北區',owner:'亞展汽車'},
+  {id:10,name:'嘉義大林薯光',capacity:1143,unit:'KW',city:'嘉義',zone:'北區',owner:'薯光農業'},
+  {id:11,name:'台南柳營黃燕良牛舍',capacity:300,unit:'KW',city:'台南',zone:'南區',owner:'黃燕良農場'},
+  {id:12,name:'台南楠西一期',capacity:306.13,unit:'KW',city:'台南',zone:'南區',owner:'楠西農電'},
+  {id:13,name:'台南天賜良園追日固定',capacity:24,unit:'KW',city:'台南',zone:'南區',owner:'天賜良園'},
+  {id:14,name:'台南善化雞舍',capacity:86.4,unit:'KW',city:'台南',zone:'南區',owner:'善化畜牧場'},
+  {id:15,name:'台南心德教養院',capacity:48.96,unit:'KW',city:'台南',zone:'南區',owner:'心德教養院'},
+  {id:16,name:'高雄恩智浦',capacity:701.96,unit:'KW',city:'高雄',zone:'南區',owner:'恩智浦半導體'},
+  {id:17,name:'高雄小港盛餘鋼鐵(既設)',capacity:471,unit:'KW',city:'高雄',zone:'南區',owner:'盛餘鋼鐵'},
+  {id:18,name:'高雄小港盛餘鋼鐵(新設)',capacity:1499.37,unit:'KW',city:'高雄',zone:'南區',owner:'盛餘鋼鐵'},
+  {id:19,name:'屏東汽車客運公司',capacity:1570,unit:'KW',city:'屏東',zone:'南區',owner:'屏東客運'},
+  {id:20,name:'台東東職一期',capacity:489.21,unit:'KW',city:'台東',zone:'南區',owner:'台東縣東職'},
+  {id:21,name:'台東東職二期',capacity:576.495,unit:'KW',city:'台東',zone:'南區',owner:'台東縣東職'},
+  {id:22,name:'台東廣源國小',capacity:99.66,unit:'KW',city:'台東',zone:'南區',owner:'廣源國小'},
+  {id:23,name:'台東廣源國小幼兒園',capacity:60.06,unit:'KW',city:'台東',zone:'南區',owner:'廣源國小附幼'},
+];
+const SCHEDULE_DATA=[
+  {siteId:1,month:2,type:'clean'},{siteId:1,month:4,type:'semi'},{siteId:1,month:9,type:'annual'},
+  {siteId:2,month:2,type:'clean'},{siteId:2,month:4,type:'semi'},{siteId:2,month:9,type:'annual'},
+  {siteId:3,month:2,type:'hv26'},{siteId:3,month:3,type:'semi'},{siteId:3,month:3,type:'clean'},{siteId:3,month:11,type:'annual'},{siteId:3,month:1,type:'hv26'},
+  {siteId:4,month:2,type:'hv26'},{siteId:4,month:3,type:'semi'},{siteId:4,month:3,type:'clean'},{siteId:4,month:11,type:'annual'},{siteId:4,month:1,type:'hv26'},
+  {siteId:5,month:2,type:'clean'},{siteId:5,month:3,type:'semi'},{siteId:5,month:11,type:'annual'},
+  {siteId:6,month:2,type:'clean'},{siteId:6,month:3,type:'semi'},{siteId:6,month:3,type:'hv26'},{siteId:6,month:11,type:'annual'},
+  {siteId:7,month:2,type:'clean'},{siteId:7,month:4,type:'semi'},{siteId:7,month:10,type:'annual'},
+  {siteId:8,month:2,type:'clean'},{siteId:8,month:4,type:'semi'},{siteId:8,month:11,type:'annual'},
+  {siteId:9,month:2,type:'clean'},{siteId:9,month:4,type:'semi'},
+  {siteId:10,month:3,type:'hv26'},{siteId:10,month:4,type:'semi'},{siteId:10,month:4,type:'clean'},{siteId:10,month:10,type:'annual'},{siteId:10,month:10,type:'clean'},
+  {siteId:11,month:2,type:'clean'},{siteId:11,month:4,type:'semi'},{siteId:11,month:5,type:'hv26'},{siteId:11,month:9,type:'annual'},
+  {siteId:12,month:3,type:'clean'},{siteId:12,month:5,type:'semi'},{siteId:12,month:6,type:'hv26'},{siteId:12,month:12,type:'annual'},
+  {siteId:13,month:2,type:'clean'},{siteId:13,month:5,type:'semi'},{siteId:13,month:9,type:'annual'},
+  {siteId:14,month:2,type:'clean'},{siteId:14,month:6,type:'semi'},{siteId:14,month:11,type:'annual'},
+  {siteId:15,month:2,type:'clean'},{siteId:15,month:5,type:'semi'},{siteId:15,month:12,type:'annual'},
+  {siteId:16,month:9,type:'semi'},{siteId:16,month:9,type:'clean'},
+  {siteId:17,month:5,type:'semi'},{siteId:17,month:5,type:'clean'},{siteId:17,month:11,type:'annual'},{siteId:17,month:11,type:'clean'},
+  {siteId:18,month:4,type:'semi'},{siteId:18,month:4,type:'clean'},{siteId:18,month:10,type:'annual'},{siteId:18,month:10,type:'clean'},
+  {siteId:19,month:2,type:'hv26'},{siteId:19,month:3,type:'semi'},{siteId:19,month:3,type:'clean'},{siteId:19,month:10,type:'annual'},{siteId:19,month:1,type:'hv26'},
+  {siteId:20,month:2,type:'clean'},{siteId:20,month:3,type:'semi'},{siteId:20,month:3,type:'hv25s'},{siteId:20,month:11,type:'annual'},
+  {siteId:21,month:2,type:'clean'},{siteId:21,month:3,type:'semi'},{siteId:21,month:3,type:'hv25s'},{siteId:21,month:11,type:'annual'},
+  {siteId:22,month:2,type:'clean'},{siteId:22,month:3,type:'semi'},{siteId:22,month:8,type:'annual'},
+  {siteId:23,month:2,type:'clean'},{siteId:23,month:3,type:'semi'},{siteId:23,month:8,type:'annual'},
+];
+const WORK_TYPES={
+  clean:{label:'清洗模組',short:'洗',symbol:'○',color:'#f59e0b',cls:'clean'},
+  semi:{label:'半年檢',short:'半',symbol:'■',color:'#10b981',cls:'semi'},
+  annual:{label:'年檢',short:'年',symbol:'□',color:'#3b82f6',cls:'annual'},
+  hv26:{label:'高壓2026',short:'高壓',symbol:'★',color:'#ef4444',cls:'hv26'},
+  hv25s:{label:'高壓2025(補)',short:'補',symbol:'☆',color:'#8b5cf6',cls:'hv25s'},
+};
+const STATUS_CONFIG={
+  pending:{label:'待派工',cls:'badge-neutral'},
+  assigned:{label:'已派工',cls:'badge-info'},
+  'in-progress':{label:'施工中',cls:'badge-warning'},
+  review:{label:'待驗收',cls:'badge-purple'},
+  completed:{label:'已完成',cls:'badge-success'},
+  overdue:{label:'已逾期',cls:'badge-danger'},
+};
+const ENGINEERS=[
+  {id:1,name:'王小明',zone:'北區',avatar:'王'},
+  {id:2,name:'李大偉',zone:'北區',avatar:'李'},
+  {id:3,name:'張建國',zone:'南區',avatar:'張'},
+  {id:4,name:'陳美玲',zone:'南區',avatar:'陳'},
+  {id:5,name:'林志豪',zone:'全區',avatar:'林'},
+];
+const FISCAL_MONTHS=[2,3,4,5,6,7,8,9,10,11,12,1];
+const TODAY=new Date(2026,5,9);
+function getSite(id){return SITES_DATA.find(s=>s.id===id);}
+function totalCapacityMW(){return(SITES_DATA.reduce((s,x)=>s+x.capacity,0)/1000).toFixed(2);}
+function capacityDisplay(kw){return kw>=1000?(kw/1000).toFixed(2)+' MW':kw+' KW';}
+function monthLabel(m){return m===1?'翌1月':m+'月';}
+function fiscalYear(m){return m===1?2027:2026;}
+function getTaskStatus(m){
+  const y=fiscalYear(m),d=new Date(y,m-1,1),now=new Date(TODAY.getFullYear(),TODAY.getMonth(),1);
+  if(d<now)return'completed';
+  if(d.getMonth()===TODAY.getMonth()&&d.getFullYear()===TODAY.getFullYear())return'in-progress';
+  return'pending';
+}
+function generateWorkOrders(){
+  const am={1:'王小明',2:'王小明',3:'李大偉',4:'李大偉',5:'王小明',6:'李大偉',7:'李大偉',8:'王小明',9:'王小明',10:'李大偉',11:'張建國',12:'張建國',13:'陳美玲',14:'陳美玲',15:'陳美玲',16:'張建國',17:'張建國',18:'陳美玲',19:'林志豪',20:'林志豪',21:'林志豪',22:'陳美玲',23:'陳美玲'};
+  return SCHEDULE_DATA.map((e,i)=>{
+    const site=getSite(e.siteId),y=fiscalYear(e.month),raw=getTaskStatus(e.month);
+    const status=raw==='completed'&&i%7===3?'overdue':raw;
+    return{id:`OM-2026-${String(i+1).padStart(4,'0')}`,siteId:e.siteId,siteName:site.name,type:e.type,month:e.month,year:y,scheduledDate:`${y}-${String(e.month).padStart(2,'0')}-15`,assignee:raw==='pending'?'':(am[e.siteId]||'王小明'),status,notes:'',completedDate:raw==='completed'&&status!=='overdue'?`${y}-${String(e.month).padStart(2,'0')}-20`:null};
+  });
+}
+function getSiteHistory(siteId){
+  return generateWorkOrders().filter(w=>w.siteId===siteId&&w.status==='completed').map(w=>({date:w.completedDate||w.scheduledDate,title:WORK_TYPES[w.type].label+'完成',desc:`工單 ${w.id}，執行人：${w.assignee}`,type:w.type})).sort((a,b)=>b.date.localeCompare(a.date));
+}
 
-  <script src="js/data.js"></script>
-  <script src="js/app.js"></script>
+// ── App ───────────────────────────────────────────────────────────
+const App={
+  state:{view:'dashboard',scheduleData:null,workOrders:null,selectedSite:null,woFilter:'all',clTab:'semi',photoCat:'all',histSite:null,ganttZone:'all'},
+  init(){
+    const saved=localStorage.getItem('om_schedule_2026');
+    this.state.scheduleData=saved?JSON.parse(saved):JSON.parse(JSON.stringify(SCHEDULE_DATA));
+    this.state.workOrders=generateWorkOrders();
+    document.querySelectorAll('.nav-item').forEach(el=>{
+      el.addEventListener('click',e=>{e.preventDefault();this.navigate(el.dataset.view);});
+    });
+    document.getElementById('menuToggle').addEventListener('click',()=>{
+      const sb=document.getElementById('sidebar');
+      if(window.innerWidth<=768)sb.classList.toggle('mobile-open');
+      else sb.classList.toggle('collapsed');
+    });
+    this.navigate('dashboard');
+  },
+  navigate(view){
+    this.state.view=view;
+    document.querySelectorAll('.nav-item').forEach(el=>el.classList.toggle('active',el.dataset.view===view));
+    const titles={dashboard:'儀表板',sites:'案場清單',schedule:'年度計畫甘特圖',workorders:'工單管理',checklists:'維護檢查表',cleaning:'模組清洗管理',dispatch:'派工管理',history:'維運履歷',photos:'照片管理',reports:'報表中心',users:'權限管理'};
+    document.getElementById('topbarTitle').textContent=titles[view]||view;
+    this.render();
+  },
+  render(){
+    const el=document.getElementById('content');
+    el.innerHTML=this.views[this.state.view]?this.views[this.state.view].call(this):'<div class="loading">載入中...</div>';
+    this.bindEvents();
+    if(this.state.view==='workorders')setTimeout(()=>this.renderWOList(),0);
+  },
+  openModal(title,body,footer){
+    document.getElementById('modalTitle').textContent=title;
+    document.getElementById('modalBody').innerHTML=body;
+    const f=document.querySelector('.modal-footer');
+    if(f)f.innerHTML=footer||'<button class="btn btn-outline" onclick="App.closeModal()">關閉</button>';
+    document.getElementById('modalOverlay').classList.add('open');
+  },
+  closeModal(){document.getElementById('modalOverlay').classList.remove('open');},
+  search(q){
+    if(!q.trim())return;
+    const r=SITES_DATA.filter(s=>s.name.includes(q));
+    if(r.length===1){this.navigate('sites');setTimeout(()=>this.showSiteDetail(r[0].id),100);}
+  },
+  bindEvents(){
+    document.querySelectorAll('.wo-tab').forEach(t=>t.addEventListener('click',()=>{
+      this.state.woFilter=t.dataset.filter;
+      document.querySelectorAll('.wo-tab').forEach(x=>x.classList.toggle('active',x===t));
+      this.renderWOList();
+    }));
+    document.querySelectorAll('.cl-tab').forEach(t=>t.addEventListener('click',()=>{
+      this.state.clTab=t.dataset.tab;
+      document.querySelectorAll('.cl-tab').forEach(x=>x.classList.toggle('active',x===t));
+      document.querySelectorAll('.cl-panel').forEach(p=>p.style.display=p.dataset.panel===this.state.clTab?'':'none');
+    }));
+    document.querySelectorAll('.photo-cat-btn').forEach(b=>b.addEventListener('click',()=>{
+      this.state.photoCat=b.dataset.cat;
+      document.querySelectorAll('.photo-cat-btn').forEach(x=>x.classList.toggle('active',x===b));
+      this.renderPhotoGrid();
+    }));
+    this.bindGanttDrag();
+  },
+  typeChip(t){const w=WORK_TYPES[t];return`<span class="chip ${w.cls}">${w.symbol} ${w.short}</span>`;},
+  statusBadge(s){const c=STATUS_CONFIG[s]||STATUS_CONFIG.pending;return`<span class="badge ${c.cls}">${c.label}</span>`;},
+
+  views:{
+    dashboard(){
+      const wo=this.state.workOrders,totalMW=totalCapacityMW();
+      const thisMonth=wo.filter(w=>w.month===TODAY.getMonth()+1&&w.year===TODAY.getFullYear());
+      const overdue=wo.filter(w=>w.status==='overdue'),completed=wo.filter(w=>w.status==='completed');
+      const pastMonths=FISCAL_MONTHS.filter(m=>{const y=fiscalYear(m);return new Date(y,m-1,1)<new Date(TODAY.getFullYear(),TODAY.getMonth(),1);});
+      const totalPast=wo.filter(w=>pastMonths.includes(w.month)).length;
+      const completedPast=wo.filter(w=>pastMonths.includes(w.month)&&w.status==='completed').length;
+      const rate=totalPast?Math.round(completedPast/totalPast*100):0;
+      const recent=wo.filter(w=>w.status!=='pending').slice(0,8);
+      const northSites=SITES_DATA.filter(s=>s.zone==='北區').length;
+      return`<div class="page-header"><div class="page-title">維運作業總覽</div><div class="page-subtitle">2026年度 — 今日：2026年6月9日</div></div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">總案場數</div><div class="stat-value">${SITES_DATA.length} <span class="stat-unit">座</span></div><div class="stat-sub">北區 ${northSites} 座 / 南區 ${SITES_DATA.length-northSites} 座</div></div>
+        <div class="stat-card info"><div class="stat-label">總裝置容量</div><div class="stat-value">${totalMW} <span class="stat-unit">MW</span></div><div class="stat-sub">共 ${(totalMW*1000).toFixed(0)} KW</div></div>
+        <div class="stat-card warning"><div class="stat-label">本月待執行工作</div><div class="stat-value">${thisMonth.filter(w=>w.status!=='completed').length} <span class="stat-unit">件</span></div><div class="stat-sub">本月共 ${thisMonth.length} 件</div></div>
+        <div class="stat-card success"><div class="stat-label">已完成工作</div><div class="stat-value">${completed.length} <span class="stat-unit">件</span></div><div class="stat-sub">完成率 ${rate}%</div></div>
+        <div class="stat-card danger"><div class="stat-label">逾期未完成</div><div class="stat-value">${overdue.length} <span class="stat-unit">件</span></div><div class="stat-sub">需立即處理</div></div>
+        <div class="stat-card purple"><div class="stat-label">年度總工單</div><div class="stat-value">${wo.length} <span class="stat-unit">件</span></div><div class="stat-sub">含所有維護類型</div></div>
+      </div>
+      <div class="dash-grid">
+        <div>
+          <div class="card mb-16"><div class="card-header"><span class="card-title">本月工作 (2026年6月)</span></div><div class="card-body">
+            <div class="month-tasks">${['clean','semi','annual','hv26','hv25s'].map(t=>{const cnt=thisMonth.filter(w=>w.type===t).length;if(!cnt)return'';const wt=WORK_TYPES[t];return`<div class="month-task-item"><div class="month-task-count" style="color:${wt.color}">${cnt}</div><span class="chip ${wt.cls} mt-4">${wt.symbol} ${wt.label}</span></div>`;}).join('')||'<div class="text-muted">本月無排程工作</div>'}</div>
+            ${overdue.length?`<div class="divider"></div><div style="font-size:12px;font-weight:600;color:var(--danger);margin-bottom:8px">⚠ 逾期 ${overdue.length} 件</div>${overdue.slice(0,3).map(w=>`<div class="timeline-item"><div class="timeline-dot" style="background:var(--danger)"></div><div class="timeline-body"><div class="timeline-title">${w.siteName}</div><div class="timeline-meta">${WORK_TYPES[w.type].label} · ${w.scheduledDate}</div></div></div>`).join('')}`:''}
+          </div></div>
+          <div class="card"><div class="card-header"><span class="card-title">近期工單</span><button class="btn btn-outline btn-sm" onclick="App.navigate('workorders')">查看全部</button></div>
+          <div class="card-body" style="padding:0"><table class="data-table"><thead><tr><th>工單編號</th><th>案場</th><th>類型</th><th>狀態</th><th>負責人</th></tr></thead><tbody>
+            ${recent.map(w=>`<tr class="clickable" onclick="App.showWODetail('${w.id}')"><td style="font-family:monospace;font-size:11px">${w.id}</td><td><span class="zone-badge ${w.siteId<=10?'zone-north':'zone-south'}" style="margin-right:4px">${getSite(w.siteId).zone}</span>${w.siteName}</td><td>${App.typeChip(w.type)}</td><td>${App.statusBadge(w.status)}</td><td>${w.assignee||'<span class="text-muted">未派工</span>'}</td></tr>`).join('')}
+          </tbody></table></div></div>
+        </div>
+        <div>
+          <div class="card mb-16"><div class="card-header"><span class="card-title">年度完成率</span></div><div class="card-body">
+            ${FISCAL_MONTHS.slice(0,10).map(m=>{const y=fiscalYear(m),total=wo.filter(w=>w.month===m&&w.year===y).length;if(!total)return'';const done=wo.filter(w=>w.month===m&&w.year===y&&w.status==='completed').length,pct=Math.round(done/total*100),isCur=m===TODAY.getMonth()+1;return`<div class="progress-row"><span style="width:38px;text-align:right;color:var(--text-2)">${monthLabel(m)}</span><div class="progress-bar-wrap"><div class="progress-bar" style="width:${pct}%;background:${isCur?'var(--warning)':pct===100?'var(--success)':'var(--primary)'}"></div></div><span style="width:36px;font-size:12px;color:var(--text-2)">${done}/${total}</span></div>`;}).join('')}
+          </div></div>
+          <div class="card"><div class="card-header"><span class="card-title">區域分佈</span></div><div class="card-body">
+            ${['北區','南區'].map(zone=>{const sites=SITES_DATA.filter(s=>s.zone===zone),kw=sites.reduce((s,x)=>s+x.capacity,0),pct=Math.round(kw/(parseFloat(totalMW)*1000)*100);return`<div class="mb-16"><div class="flex justify-between mb-4"><span class="zone-badge ${zone==='北區'?'zone-north':'zone-south'}">${zone}</span><span style="font-size:12px;color:var(--text-2)">${sites.length}座 · ${(kw/1000).toFixed(2)} MW</span></div><div class="progress-bar-wrap" style="height:12px"><div class="progress-bar" style="width:${pct}%;background:${zone==='北區'?'var(--info)':'#f472b6'}"></div></div></div>`;}).join('')}
+          </div></div>
+        </div>
+      </div>`;
+    },
+    sites(){
+      return`<div class="page-header-row"><div class="page-header"><div class="page-title">案場清單</div><div class="page-subtitle">共 ${SITES_DATA.length} 座案場，總容量 ${totalCapacityMW()} MW</div></div><div class="page-actions"><button class="btn btn-primary btn-sm" onclick="App.showAddSite()">＋ 新增案場</button></div></div>
+      <div class="filters"><select class="filter-select" onchange="App.filterSites(this.value,'zone')" id="zoneFilter"><option value="">全部區域</option><option value="北區">北區</option><option value="南區">南區</option></select>
+      <select class="filter-select" onchange="App.filterSites(this.value,'city')" id="cityFilter"><option value="">全部縣市</option>${[...new Set(SITES_DATA.map(s=>s.city))].map(c=>`<option>${c}</option>`).join('')}</select></div>
+      <div class="card"><div class="table-wrap"><table class="data-table"><thead><tr><th>#</th><th>案場名稱</th><th>容量</th><th>縣市</th><th>區域</th><th>業主</th><th>工單數</th><th>操作</th></tr></thead><tbody id="sitesBody">${this.renderSiteRows()}</tbody></table></div></div>
+      ${this.state.selectedSite?this.renderSiteDetailPanel(this.state.selectedSite):''}`;
+    },
+    schedule(){
+      const data=this.state.scheduleData,zone=this.state.ganttZone,currentM=TODAY.getMonth()+1;
+      const sites=zone==='all'?SITES_DATA:SITES_DATA.filter(s=>s.zone===zone);
+      const zones=zone==='all'?['北區','南區']:[zone];
+      const legend=Object.entries(WORK_TYPES).map(([k,v])=>`<div class="legend-item"><div class="legend-dot" style="background:${v.color}"></div><span>${v.symbol} ${v.label}</span></div>`).join('');
+      const ganttRows=zones.map(z=>{
+        const siteRows=sites.filter(s=>s.zone===z).map(site=>{
+          const cells=FISCAL_MONTHS.map(m=>{
+            const items=data.filter(d=>d.siteId===site.id&&d.month===m);
+            const chips=items.map(d=>`<div class="gantt-chip ${d.type}" draggable="true" data-site="${d.siteId}" data-month="${d.month}" data-type="${d.type}" onclick="App.showGanttTask(${d.siteId},${d.month},'${d.type}')" title="${site.name} - ${WORK_TYPES[d.type].label}">${WORK_TYPES[d.type].symbol}${WORK_TYPES[d.type].short}</div>`).join('');
+            const isCur=m===currentM;
+            return`<td class="gantt-cell" data-site="${site.id}" data-month="${m}" style="${isCur?'background:#f0fdf4':''}" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="App.onGanttDrop(event,${site.id},${m})"><div class="gantt-chips">${chips}<span class="gantt-add-btn" onclick="App.addGanttTask(${site.id},${m})">＋</span></div></td>`;
+          }).join('');
+          return`<tr><td class="site-col" title="${site.name}">${site.name}<br><span style="font-size:10px;color:var(--text-3)">${capacityDisplay(site.capacity)}</span></td>${cells}</tr>`;
+        }).join('');
+        return`<tr class="gantt-zone-row"><td class="site-col">${z}</td>${FISCAL_MONTHS.map(()=>'<td></td>').join('')}</tr>${siteRows}`;
+      }).join('');
+      return`<div class="page-header-row"><div><div class="page-title">年度計畫甘特圖</div><div class="page-subtitle">2026年度維運排程 — 可拖曳調整月份，點擊 ＋ 新增工作</div></div><div class="page-actions"><button class="btn btn-outline btn-sm" onclick="App.exportSchedule()">匯出 PDF</button></div></div>
+      <div class="filters"><select class="filter-select" onchange="App.state.ganttZone=this.value;App.render()"><option value="all">全部區域</option><option value="北區">北區</option><option value="南區">南區</option></select></div>
+      <div class="gantt-legend">${legend}<span style="font-size:11px;color:var(--text-3);margin-left:8px">▌ 綠底 = 本月</span></div>
+      <div class="card"><div class="gantt-wrap"><table class="gantt-table"><thead><tr><th class="site-col" style="min-width:170px">案場</th>${FISCAL_MONTHS.map(m=>`<th class="gantt-month-col" style="${m===currentM?'background:#d1fae5;color:#065f46;':''}">${monthLabel(m)}${m===currentM?'<br><span style="font-size:9px">本月</span>':''}</th>`).join('')}</tr></thead><tbody>${ganttRows}</tbody></table></div></div>`;
+    },
+    workorders(){
+      return`<div class="page-header-row"><div><div class="page-title">工單管理</div><div class="page-subtitle">總計 ${this.state.workOrders.length} 份工單</div></div><div class="page-actions"><button class="btn btn-primary btn-sm" onclick="App.showNewWOModal()">＋ 建立工單</button></div></div>
+      <div class="wo-status-tabs">${[{f:'all',l:'全部'},{f:'pending',l:'待派工'},{f:'assigned',l:'已派工'},{f:'in-progress',l:'施工中'},{f:'review',l:'待驗收'},{f:'completed',l:'已完成'},{f:'overdue',l:'已逾期'}].map(t=>`<div class="wo-tab${this.state.woFilter===t.f?' active':''}" data-filter="${t.f}">${t.l}</div>`).join('')}</div>
+      <div id="woListWrap"></div>`;
+    },
+    checklists(){
+      const panels={
+        semi:{title:'半年檢查表',sections:[
+          {name:'DC 側',items:['模組外觀目視檢查（碎裂、燒焦、變色）','接線盒外觀檢查','MC4接頭檢查與清潔','直流側開關功能確認','熱顯像儀掃描（若有）','字串電壓/電流量測','接地電阻量測']},
+          {name:'AC 側',items:['配電盤外觀檢查','MCCB功能確認','交流側接線緊固度確認','盤體接地電阻量測','逆變器告警記錄確認','逆變器效率確認']},
+          {name:'結構檢查',items:['支撐架鏽蝕檢查','螺栓緊固確認','線槽完整性確認','雜草清除確認']},
+        ]},
+        annual:{title:'年度檢查表',sections:[
+          {name:'電氣測試',items:['絕緣電阻測試（各字串對地）','接地系統電阻測試','保護裝置動作測試','IV Curve量測（各字串）','逆功率保護測試','孤島效應保護測試']},
+          {name:'系統評估',items:['年發電量與PR值分析','逆變器效率曲線確認','監控系統功能確認','SCADA數據準確性確認','異常停機記錄分析','保固與維護合約確認']},
+          {name:'文件更新',items:['竣工圖更新（如有變更）','設備台帳更新','年度報告書製作','業主簽收確認']},
+        ]},
+        hv:{title:'高壓設備保養表',sections:[
+          {name:'主要設備',items:['PT（電壓互感器）清潔與測試','CT（電流互感器）清潔與測試','VCB（真空斷路器）動作試驗','DS（隔離開關）外觀與功能確認','避雷器接地確認']},
+          {name:'保護電驛',items:['OC電驛功能測試','EF電驛功能測試','Reclosing電驛確認','告警回路確認','遠端信號傳輸確認']},
+          {name:'接地系統',items:['接地母排外觀確認','接地電阻量測（< 10Ω）','接地線連接緊固確認','盤面接地導通確認']},
+        ]},
+      };
+      const active=this.state.clTab||'semi';
+      return`<div class="page-header-row"><div><div class="page-title">維護檢查表</div><div class="page-subtitle">數位化現場檢查表，可手機填寫</div></div></div>
+      <div class="card"><div class="card-body"><div class="checklist-tabs">${Object.entries(panels).map(([k,v])=>`<div class="cl-tab${active===k?' active':''}" data-tab="${k}">${v.title}</div>`).join('')}</div>
+      ${Object.entries(panels).map(([k,v])=>`<div class="cl-panel" data-panel="${k}" style="${active!==k?'display:none':''}">
+        ${v.sections.map(sec=>`<div class="checklist-section"><div class="checklist-section-title">${sec.name}</div>${sec.items.map((item,i)=>`<div class="checklist-item"><input type="checkbox" id="cl_${k}_${i}" onchange="this.nextElementSibling.classList.toggle('checked',this.checked)"><label for="cl_${k}_${i}">${item}</label><select style="font-size:11px;border:1px solid var(--border);border-radius:3px;padding:2px 4px;color:var(--text-2)"><option>正常</option><option>異常</option><option>待確認</option></select></div>`).join('')}</div>`).join('')}
+        <div class="form-group mt-16"><label class="form-label">備注 / 異常說明</label><textarea class="form-control" rows="3" placeholder="填寫異常說明或備注..."></textarea></div>
+        <div class="flex gap-8 mt-16"><button class="btn btn-primary" onclick="App.submitChecklist('${k}')">提交檢查表</button><button class="btn btn-outline">儲存草稿</button><button class="btn btn-outline" onclick="window.print()">列印</button></div>
+      </div>`).join('')}</div></div>`;
+    },
+    cleaning(){
+      const info=SITES_DATA.map(site=>{
+        const tasks=SCHEDULE_DATA.filter(d=>d.siteId===site.id&&d.type==='clean');
+        const past=tasks.filter(d=>new Date(fiscalYear(d.month),d.month-1,1)<TODAY);
+        const future=tasks.filter(d=>new Date(fiscalYear(d.month),d.month-1,1)>=new Date(TODAY.getFullYear(),TODAY.getMonth(),1));
+        return{site,last:past.length?past[past.length-1]:null,next:future.length?future[0]:null};
+      }).filter(x=>x.last||x.next);
+      return`<div class="page-header-row"><div><div class="page-title">模組清洗管理</div><div class="page-subtitle">清洗計畫追蹤與成果記錄</div></div></div>
+      <div class="card mb-16"><div class="card-header"><span class="card-title">清洗排程總覽</span></div><div class="table-wrap"><table class="data-table"><thead><tr><th>案場</th><th>容量</th><th>區域</th><th>上次清洗</th><th>預計清洗</th><th>狀態</th></tr></thead><tbody>
+      ${info.map(({site,last,next})=>`<tr><td>${site.name}</td><td>${capacityDisplay(site.capacity)}</td><td><span class="zone-badge ${site.zone==='北區'?'zone-north':'zone-south'}">${site.zone}</span></td><td>${last?`2026年${last.month}月`:'未記錄'}</td><td>${next?`2026年${next.month}月`:'已完成'}</td><td>${next?'<span class="badge badge-warning">待清洗</span>':'<span class="badge badge-success">已清洗</span>'}</td></tr>`).join('')}
+      </tbody></table></div></div>`;
+    },
+    dispatch(){
+      const m=6,y=2026,firstDay=new Date(y,m-1,1).getDay(),daysInMonth=new Date(y,m,0).getDate();
+      const wo=this.state.workOrders.filter(w=>w.month===m&&w.year===y);
+      const dayMap={};wo.forEach(w=>{const d=parseInt(w.scheduledDate.split('-')[2]);if(!dayMap[d])dayMap[d]=[];dayMap[d].push(w);});
+      const days=['日','一','二','三','四','五','六'];
+      let cells=Array(firstDay).fill(null);for(let i=1;i<=daysInMonth;i++)cells.push(i);
+      return`<div class="page-header-row"><div><div class="page-title">派工管理</div><div class="page-subtitle">2026年6月工作行程</div></div><div class="page-actions"><button class="btn btn-primary btn-sm" onclick="App.showDispatchModal()">＋ 指派工作</button></div></div>
+      <div class="dispatch-grid">
+        <div class="card"><div class="card-header"><span class="card-title">2026年 6月</span></div><div class="card-body">
+          <div class="calendar-grid mb-8">${days.map(d=>`<div class="cal-header">${d}</div>`).join('')}</div>
+          <div class="calendar-grid">${cells.map(d=>{if(!d)return'<div class="cal-day other-month"></div>';const isToday=d===9,events=dayMap[d]||[];return`<div class="cal-day${isToday?' today':''}"><div class="cal-day-num">${d}</div>${events.slice(0,2).map(w=>`<div class="cal-event">${w.siteName.slice(0,4)}</div>`).join('')}${events.length>2?`<div class="cal-event">+${events.length-2}</div>`:''}</div>`;}).join('')}
+          </div></div></div>
+        <div>
+          <div class="card mb-16"><div class="card-header"><span class="card-title">技術人員</span></div><div class="card-body" style="padding:0 16px">
+            ${ENGINEERS.map(e=>{const tasks=wo.filter(w=>w.assignee===e.name).length;return`<div class="tech-item"><div class="tech-avatar">${e.avatar}</div><div class="flex-1"><div class="tech-name">${e.name}</div><div class="tech-tasks">${e.zone} · 本月 ${tasks} 件</div></div><span class="badge ${tasks>0?'badge-info':'badge-neutral'}">${tasks}</span></div>`;}).join('')}
+          </div></div>
+          <div class="card"><div class="card-header"><span class="card-title">本月工單</span></div><div class="card-body" style="padding:0">
+            ${wo.length===0?'<div class="empty-state" style="padding:20px"><div class="empty-state-text">本月無工單</div></div>':wo.map(w=>`<div class="timeline-item" style="padding:10px 16px;cursor:pointer" onclick="App.showWODetail('${w.id}')"><div class="timeline-dot" style="background:${w.status==='completed'?'var(--success)':w.status==='in-progress'?'var(--warning)':'var(--text-3)'}"></div><div class="timeline-body"><div class="timeline-title">${w.siteName}</div><div class="timeline-meta">${WORK_TYPES[w.type].label} · ${w.assignee||'未派工'}</div></div>${App.statusBadge(w.status)}</div>`).join('')}
+          </div></div>
+        </div>
+      </div>`;
+    },
+    history(){
+      const site=this.state.histSite||SITES_DATA[0],hist=getSiteHistory(site.id);
+      return`<div class="page-header"><div class="page-title">維運履歷</div><div class="page-subtitle">每個案場自動建立完整維護記錄</div></div>
+      <div class="filters mb-16"><select class="filter-select" onchange="App.state.histSite=SITES_DATA.find(s=>s.id===+this.value);App.render()" style="min-width:200px">${SITES_DATA.map(s=>`<option value="${s.id}"${s.id===site.id?' selected':''}>${s.name}</option>`).join('')}</select></div>
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:20px">
+        <div class="card"><div class="card-header"><span class="card-title">${site.name} — 維運履歷</span></div><div class="card-body">
+          ${hist.length===0?'<div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-text">尚無完成記錄</div></div>':`<div class="history-timeline">${hist.map(h=>`<div class="ht-item"><div class="ht-dot" style="background:${WORK_TYPES[h.type]?.color||'var(--primary)'}"></div><div class="ht-card"><div class="ht-date">${h.date}</div><div class="ht-title">${h.title}</div><div class="ht-desc">${h.desc}</div></div></div>`).join('')}</div>`}
+        </div></div>
+        <div class="card"><div class="card-header"><span class="card-title">案場資訊</span></div><div class="card-body"><div class="info-grid">${[['容量',capacityDisplay(site.capacity)],['縣市',site.city],['區域',site.zone],['業主',site.owner]].map(([l,v])=>`<div class="info-item"><div class="label">${l}</div><div class="value">${v}</div></div>`).join('')}</div></div></div>
+      </div>`;
+    },
+    photos(){
+      return`<div class="page-header-row"><div><div class="page-title">照片管理</div><div class="page-subtitle">維運照片資料庫</div></div><div class="page-actions"><button class="btn btn-primary btn-sm" onclick="App.showPhotoUpload()">上傳照片</button></div></div>
+      <div class="photo-cats">${[{k:'all',l:'全部'},{k:'annual',l:'年度檢查'},{k:'clean',l:'清洗紀錄'},{k:'fault',l:'故障紀錄'},{k:'improve',l:'施工改善'},{k:'aerial',l:'空拍照片'}].map(c=>`<button class="photo-cat-btn${this.state.photoCat===c.k?' active':''}" data-cat="${c.k}">${c.l}</button>`).join('')}</div>
+      <div id="photoGrid">${this.renderPhotoGrid()}</div>`;
+    },
+    reports(){
+      return`<div class="page-header"><div class="page-title">報表中心</div><div class="page-subtitle">自動產出維運報告</div></div>
+      <div class="report-cards mb-20">${[{icon:'📋',t:'月報',d:'工作完成率、異常事件、發電量分析'},{icon:'📊',t:'年報',d:'年檢記錄、保養統計、KPI分析'},{icon:'🔧',t:'異常報告',d:'故障紀錄、處理措施、改善建議'},{icon:'🏭',t:'案場月報',d:'單一案場完整維護報告'}].map(r=>`<div class="report-card" onclick="App.generateReport('${r.t}')"><div class="report-icon">${r.icon}</div><div class="report-title">${r.t}</div><div class="report-desc">${r.d}</div><button class="btn btn-primary mt-16 w-full">產出 PDF</button></div>`).join('')}</div>
+      <div class="card"><div class="card-header"><span class="card-title">2026年度統計摘要</span></div><div class="card-body"><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px">
+        ${Object.entries(WORK_TYPES).map(([k,v])=>{const total=SCHEDULE_DATA.filter(d=>d.type===k).length,done=this.state.workOrders.filter(w=>w.type===k&&w.status==='completed').length;return`<div style="padding:12px;border:1px solid var(--border);border-radius:8px"><div class="chip ${v.cls} mb-8">${v.symbol} ${v.label}</div><div style="font-size:22px;font-weight:700">${done}/${total}</div><div class="text-sm text-muted">已完成 / 總計</div><div class="progress-bar-wrap mt-8"><div class="progress-bar" style="width:${total?Math.round(done/total*100):0}%;background:${v.color}"></div></div></div>`;}).join('')}
+      </div></div></div>`;
+    },
+    users(){
+      const roles=[{name:'王志明',role:'管理員',zone:'全區',avatar:'王',perms:[1,1,1,1,1]},{name:'陳維運',role:'維運主管',zone:'全區',avatar:'陳',perms:[1,1,1,1,0]},{name:'李大偉',role:'維運工程師',zone:'北區',avatar:'李',perms:[1,0,1,1,0]},{name:'張建國',role:'維運工程師',zone:'南區',avatar:'張',perms:[1,0,1,1,0]},{name:'林志豪',role:'維運工程師',zone:'全區',avatar:'林',perms:[1,0,1,1,0]},{name:'陳美玲',role:'維運工程師',zone:'南區',avatar:'陳',perms:[1,0,1,1,0]}];
+      const pl=['查看案場','新增/修改','執行工單','上傳照片','系統設定'];
+      return`<div class="page-header-row"><div><div class="page-title">權限管理</div><div class="page-subtitle">使用者帳號與角色權限設定</div></div><div class="page-actions"><button class="btn btn-primary btn-sm">＋ 新增使用者</button></div></div>
+      <div class="user-grid mb-20">${roles.map(u=>`<div class="user-card"><div class="user-card-avatar">${u.avatar}</div><div class="user-card-name">${u.name}</div><div class="user-card-role">${u.role}</div><div class="user-card-zone mt-8"><span class="zone-badge ${u.zone==='南區'?'zone-south':'zone-north'}">${u.zone}</span></div></div>`).join('')}</div>
+      <div class="card"><div class="card-header"><span class="card-title">角色權限對照表</span></div><div class="table-wrap"><table class="perm-table"><thead><tr><th>使用者</th><th>角色</th>${pl.map(p=>`<th>${p}</th>`).join('')}</tr></thead><tbody>${roles.map(u=>`<tr><td>${u.name}</td><td><span class="badge badge-info">${u.role}</span></td>${u.perms.map(p=>`<td>${p?'<span class="perm-check">✓</span>':'<span class="perm-x">✕</span>'}</td>`).join('')}</tr>`).join('')}</tbody></table></div></div>`;
+    },
+  },
+
+  renderSiteRows(fz,fc){
+    let sites=SITES_DATA;
+    if(fz)sites=sites.filter(s=>s.zone===fz);
+    if(fc)sites=sites.filter(s=>s.city===fc);
+    return sites.map((s,i)=>{const wo=this.state.workOrders.filter(w=>w.siteId===s.id).length;return`<tr class="clickable${this.state.selectedSite?.id===s.id?' selected':''}" onclick="App.showSiteDetail(${s.id})"><td class="text-muted text-xs">${i+1}</td><td style="font-weight:500">${s.name}</td><td>${capacityDisplay(s.capacity)}</td><td>${s.city}</td><td><span class="zone-badge ${s.zone==='北區'?'zone-north':'zone-south'}">${s.zone}</span></td><td class="text-muted">${s.owner}</td><td><span class="badge badge-info">${wo}件</span></td><td><button class="btn btn-outline btn-sm" onclick="event.stopPropagation();App.showSiteDetail(${s.id})">詳情</button></td></tr>`;}).join('');
+  },
+  filterSites(val,type){
+    const zone=type==='zone'?val:document.getElementById('zoneFilter')?.value||'';
+    const city=type==='city'?val:document.getElementById('cityFilter')?.value||'';
+    const tbody=document.getElementById('sitesBody');
+    if(tbody)tbody.innerHTML=this.renderSiteRows(zone,city);
+  },
+  renderSiteDetailPanel(site){
+    const wo=this.state.workOrders.filter(w=>w.siteId===site.id),hist=getSiteHistory(site.id).slice(0,4);
+    return`<div class="card mt-20"><div class="card-header"><span class="card-title">${site.name} — 詳細資料</span><button class="btn btn-outline btn-sm" onclick="App.state.selectedSite=null;App.render()">關閉 ✕</button></div><div class="card-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px">
+      <div><div class="checklist-section-title">基本資訊</div><div class="info-grid">${[['案場',site.name],['業主',site.owner],['容量',capacityDisplay(site.capacity)],['縣市',site.city],['區域',site.zone]].map(([l,v])=>`<div class="info-item"><div class="label">${l}</div><div class="value">${v}</div></div>`).join('')}</div></div>
+      <div><div class="checklist-section-title">年度工單 (${wo.length}件)</div>${wo.slice(0,5).map(w=>`<div class="flex justify-between mb-4 text-sm"><span>${w.id}</span><span class="chip ${WORK_TYPES[w.type].cls}">${WORK_TYPES[w.type].short}</span>${App.statusBadge(w.status)}</div>`).join('')}</div>
+      <div><div class="checklist-section-title">近期維護記錄</div>${hist.length===0?'<div class="text-muted text-sm">尚無記錄</div>':hist.map(h=>`<div class="mb-8"><div class="text-xs text-muted">${h.date}</div><div class="text-sm">${h.title}</div></div>`).join('')}</div>
+    </div></div></div>`;
+  },
+  showSiteDetail(id){this.state.selectedSite=getSite(id);this.render();setTimeout(()=>document.querySelector('.card.mt-20')?.scrollIntoView({behavior:'smooth'}),50);},
+  renderWOList(){
+    const filter=this.state.woFilter;
+    let wo=this.state.workOrders;
+    if(filter!=='all')wo=wo.filter(w=>w.status===filter);
+    const wrap=document.getElementById('woListWrap');
+    if(!wrap)return;
+    if(wo.length===0){wrap.innerHTML='<div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-text">無符合條件的工單</div></div>';return;}
+    wrap.innerHTML=`<div class="wo-cards">${wo.map(w=>`<div class="wo-card ${w.status}" onclick="App.showWODetail('${w.id}')"><div><div class="wo-id">${w.id}</div><div class="wo-site">${w.siteName}</div><div class="wo-meta">${App.typeChip(w.type)} · ${w.scheduledDate} · ${w.assignee||'<span class="text-muted">未派工</span>'}</div></div><div class="text-right">${App.statusBadge(w.status)}<div class="wo-date mt-4">${monthLabel(w.month)}</div></div></div>`).join('')}</div>`;
+  },
+  showWODetail(id){
+    const w=this.state.workOrders.find(x=>x.id===id);if(!w)return;
+    const site=getSite(w.siteId);
+    const body=`<div class="info-grid mb-16">${[['工單編號',w.id],['案場',w.siteName],['工作類型',`<span class="chip ${WORK_TYPES[w.type].cls}">${WORK_TYPES[w.type].symbol} ${WORK_TYPES[w.type].label}</span>`],['狀態',this.statusBadge(w.status)],['預定日期',w.scheduledDate],['負責人',w.assignee||'未派工'],['區域',`<span class="zone-badge ${site.zone==='北區'?'zone-north':'zone-south'}">${site.zone}</span>`],['容量',capacityDisplay(site.capacity)]].map(([l,v])=>`<div class="info-item"><div class="label">${l}</div><div class="value">${v}</div></div>`).join('')}</div>
+    <div class="form-group"><label class="form-label">指派工程師</label><select class="form-control" id="woAssignee"><option value="">選擇工程師...</option>${ENGINEERS.map(e=>`<option${w.assignee===e.name?' selected':''}>${e.name}</option>`).join('')}</select></div>
+    <div class="form-group"><label class="form-label">更新狀態</label><select class="form-control" id="woStatus">${Object.entries(STATUS_CONFIG).map(([k,v])=>`<option value="${k}"${w.status===k?' selected':''}>${v.label}</option>`).join('')}</select></div>
+    <div class="form-group"><label class="form-label">備注</label><textarea class="form-control" rows="3" id="woNotes">${w.notes||''}</textarea></div>`;
+    this.openModal(`工單詳情 — ${w.id}`,body,`<button class="btn btn-outline" onclick="App.closeModal()">取消</button><button class="btn btn-primary" onclick="App.saveWO('${id}')">儲存</button>`);
+  },
+  saveWO(id){const w=this.state.workOrders.find(x=>x.id===id);if(!w)return;w.assignee=document.getElementById('woAssignee').value;w.status=document.getElementById('woStatus').value;w.notes=document.getElementById('woNotes').value;this.closeModal();this.renderWOList();},
+  showNewWOModal(){
+    const body=`<div class="form-group"><label class="form-label">案場</label><select class="form-control" id="newWOSite">${SITES_DATA.map(s=>`<option value="${s.id}">${s.name}</option>`).join('')}</select></div><div class="form-row"><div class="form-group"><label class="form-label">工作類型</label><select class="form-control" id="newWOType">${Object.entries(WORK_TYPES).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join('')}</select></div><div class="form-group"><label class="form-label">預定日期</label><input type="date" class="form-control" id="newWODate" value="2026-06-15"></div></div><div class="form-group"><label class="form-label">負責工程師</label><select class="form-control" id="newWOEngineer">${ENGINEERS.map(e=>`<option>${e.name}</option>`).join('')}</select></div>`;
+    this.openModal('建立新工單',body,`<button class="btn btn-outline" onclick="App.closeModal()">取消</button><button class="btn btn-primary" onclick="App.createWO()">建立</button>`);
+  },
+  createWO(){
+    const siteId=+document.getElementById('newWOSite').value,type=document.getElementById('newWOType').value,date=document.getElementById('newWODate').value,assignee=document.getElementById('newWOEngineer').value;
+    const site=getSite(siteId),month=+date.split('-')[1],id=`OM-2026-${String(this.state.workOrders.length+1).padStart(4,'0')}`;
+    this.state.workOrders.push({id,siteId,siteName:site.name,type,month,year:2026,scheduledDate:date,assignee,status:'assigned',notes:'',completedDate:null});
+    this.closeModal();this.renderWOList();
+  },
+  bindGanttDrag(){
+    document.querySelectorAll('.gantt-chip[draggable]').forEach(chip=>{
+      chip.addEventListener('dragstart',e=>{chip.classList.add('dragging');e.dataTransfer.setData('text/plain',JSON.stringify({siteId:+chip.dataset.site,month:+chip.dataset.month,type:chip.dataset.type}));});
+      chip.addEventListener('dragend',()=>chip.classList.remove('dragging'));
+    });
+  },
+  onGanttDrop(event,toSite,toMonth){
+    event.target.closest('td')?.classList.remove('drag-over');
+    try{const data=JSON.parse(event.dataTransfer.getData('text/plain'));if(data.siteId!==toSite)return;const sd=this.state.scheduleData,idx=sd.findIndex(d=>d.siteId===data.siteId&&d.month===data.month&&d.type===data.type);if(idx===-1)return;sd[idx]={...sd[idx],month:toMonth};localStorage.setItem('om_schedule_2026',JSON.stringify(sd));this.render();}catch(e){}
+  },
+  showGanttTask(siteId,month,type){
+    const site=getSite(siteId),wt=WORK_TYPES[type],wo=this.state.workOrders.filter(w=>w.siteId===siteId&&w.month===month&&w.type===type);
+    const body=`<div class="info-grid mb-16"><div class="info-item"><div class="label">案場</div><div class="value">${site.name}</div></div><div class="info-item"><div class="label">月份</div><div class="value">${monthLabel(month)}</div></div><div class="info-item"><div class="label">工作類型</div><div class="value"><span class="chip ${wt.cls}">${wt.symbol} ${wt.label}</span></div></div><div class="info-item"><div class="label">工單數</div><div class="value">${wo.length}</div></div></div>${wo.map(w=>`<div class="wo-card ${w.status} mb-8" onclick="App.closeModal();App.showWODetail('${w.id}')"><div><div class="wo-id">${w.id}</div><div class="wo-meta">${w.assignee||'未派工'}</div></div>${App.statusBadge(w.status)}</div>`).join('')}<button class="btn btn-danger btn-sm mt-8" onclick="App.removeGanttTask(${siteId},${month},'${type}')">移除此排程</button>`;
+    this.openModal(`${site.name} · ${monthLabel(month)} · ${wt.label}`,body);
+  },
+  removeGanttTask(siteId,month,type){const sd=this.state.scheduleData,idx=sd.findIndex(d=>d.siteId===siteId&&d.month===month&&d.type===type);if(idx!==-1){sd.splice(idx,1);localStorage.setItem('om_schedule_2026',JSON.stringify(sd));}this.closeModal();this.render();},
+  addGanttTask(siteId,month){
+    const site=getSite(siteId);
+    const body=`<div class="form-group"><label class="form-label">案場</label><div class="value">${site.name}</div></div><div class="form-group"><label class="form-label">月份</label><div class="value">${monthLabel(month)}</div></div><div class="form-group"><label class="form-label">工作類型</label><select class="form-control" id="newTaskType">${Object.entries(WORK_TYPES).map(([k,v])=>`<option value="${k}">${v.symbol} ${v.label}</option>`).join('')}</select></div>`;
+    this.openModal('新增排程工作',body,`<button class="btn btn-outline" onclick="App.closeModal()">取消</button><button class="btn btn-primary" onclick="App.confirmAddTask(${siteId},${month})">確認新增</button>`);
+  },
+  confirmAddTask(siteId,month){const type=document.getElementById('newTaskType').value,sd=this.state.scheduleData;if(!sd.find(d=>d.siteId===siteId&&d.month===month&&d.type===type)){sd.push({siteId,month,type});localStorage.setItem('om_schedule_2026',JSON.stringify(sd));}this.closeModal();this.render();},
+  exportSchedule(){alert('PDF匯出功能需搭配後端服務。\n目前版本可使用瀏覽器列印功能 (Ctrl+P)。');},
+  renderPhotoGrid(){
+    const cat=this.state.photoCat;
+    const photos=[{cat:'annual',site:'桃園萬隆',date:'2026-03-20',icon:'🔍'},{cat:'annual',site:'台東東職一期',date:'2026-03-15',icon:'🔍'},{cat:'clean',site:'花蓮聖若瑟',date:'2026-02-18',icon:'🧹'},{cat:'clean',site:'雲林西螺洪慶堂',date:'2026-02-22',icon:'🧹'},{cat:'fault',site:'高雄恩智浦',date:'2026-01-05',icon:'⚠️'},{cat:'improve',site:'屏東汽車客運',date:'2026-03-18',icon:'🔧'},{cat:'aerial',site:'嘉義大林薯光',date:'2025-11-01',icon:'🚁'}].filter(p=>cat==='all'||p.cat===cat);
+    const grid=document.getElementById('photoGrid');
+    const html=`<div class="photo-grid">${photos.map(p=>`<div class="photo-item"><div class="photo-thumb">${p.icon}</div><div class="photo-info"><div class="photo-name">${p.site}</div><div class="photo-date">${p.date}</div></div></div>`).join('')}<div class="photo-upload-area" style="min-height:140px" onclick="App.showPhotoUpload()"><div style="font-size:24px">＋</div><div style="font-size:12px">上傳照片</div></div></div>`;
+    if(grid){grid.innerHTML=html;return'';}return html;
+  },
+  showPhotoUpload(){alert('照片上傳功能需搭配後端儲存服務。');},
+  showAddSite(){
+    const body=`<div class="form-group"><label class="form-label">案場名稱</label><input class="form-control" placeholder="輸入案場名稱..."></div><div class="form-row"><div class="form-group"><label class="form-label">容量 (KW)</label><input type="number" class="form-control" placeholder="0"></div><div class="form-group"><label class="form-label">縣市</label><input class="form-control" placeholder="縣市"></div></div><div class="form-row"><div class="form-group"><label class="form-label">區域</label><select class="form-control"><option>北區</option><option>南區</option></select></div><div class="form-group"><label class="form-label">業主</label><input class="form-control" placeholder="業主名稱"></div></div>`;
+    this.openModal('新增案場',body,`<button class="btn btn-outline" onclick="App.closeModal()">取消</button><button class="btn btn-primary" onclick="alert('案場新增功能需搭配資料庫');App.closeModal()">確認新增</button>`);
+  },
+  showDispatchModal(){
+    const body=`<div class="form-group"><label class="form-label">案場</label><select class="form-control">${SITES_DATA.map(s=>`<option value="${s.id}">${s.name}</option>`).join('')}</select></div><div class="form-row"><div class="form-group"><label class="form-label">工作類型</label><select class="form-control">${Object.entries(WORK_TYPES).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join('')}</select></div><div class="form-group"><label class="form-label">日期</label><input type="date" class="form-control" value="2026-06-15"></div></div><div class="form-group"><label class="form-label">指派工程師</label><select class="form-control">${ENGINEERS.map(e=>`<option>${e.name}</option>`).join('')}</select></div>`;
+    this.openModal('指派工作',body,`<button class="btn btn-outline" onclick="App.closeModal()">取消</button><button class="btn btn-primary" onclick="alert('已成功指派！');App.closeModal()">確認指派</button>`);
+  },
+  submitChecklist(type){const cbs=document.querySelectorAll(`.cl-panel[data-panel="${type}"] input[type="checkbox"]`),checked=[...cbs].filter(c=>c.checked).length;alert(`${WORK_TYPES[type]?.label||type}檢查表已提交！\n完成 ${checked}/${cbs.length} 項`);},
+  generateReport(type){alert(`正在產出 ${type}...\n\n此功能需搭配後端PDF產生服務。\n目前版本可使用 Ctrl+P 列印。`);},
+};
+
+document.addEventListener('DOMContentLoaded',()=>App.init());
+</script>
 </body>
 </html>
